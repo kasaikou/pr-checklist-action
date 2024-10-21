@@ -33,6 +33,8 @@ async function run(): Promise<undefined> {
 
     const currentStatus = comment?.body ? parseCheckList(comment?.body) : undefined;
     const contents = mergeCheckList({ schema, labels }, currentStatus)
+    core.info("## comments\n\n" + contents)
+
     await upsertComment({
         octokit,
         repo: repository.repo,
