@@ -1,0 +1,9 @@
+name: Make Checklist for Self Reviewing
+inputs:
+  config:
+    description: Path of config file.
+    required: false
+    default: self-review-checklist.yaml
+runs:
+  using: node20
+  main: lib/main.js
