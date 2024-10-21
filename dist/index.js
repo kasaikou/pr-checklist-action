@@ -34422,7 +34422,7 @@ function getLabels(input) {
                 viewer { login }
                 repository(name: $repo owner: $owner) {
                 pullRequest(number: $number) {
-                    labels(after: $after) {
+                    labels(first: 100, after: $after) {
                         nodes {
                             name
                         }
