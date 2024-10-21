@@ -1,4 +1,3 @@
-import { headBranch, pullRequestLabels } from "./actions-config";
 import { configSchema } from "./config";
 import { markdownContents } from "./markdown";
 
@@ -10,11 +9,11 @@ export function mergeCheckList(config: {
     return config.schema.contents.filter(
         (content) => {
             for (const rule of content.rules) {
-                if (rule.branches.length > 0 && !rule.branches.some((branchRule) => {
-                    return branchRule.test(headBranch)
-                })) {
-                    continue
-                }
+                // if (rule.branches.length > 0 && !rule.branches.some((branchRule) => {
+                //     return branchRule.test(headBranch)
+                // })) {
+                //     continue
+                // }
 
                 if (rule.labels.length > 0 && !rule.labels.some((labelRule) => {
                     return config.labels.some(label => labelRule.test(label))

@@ -34301,13 +34301,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.pullRequestLabels = exports.configFile = exports.githubToken = exports.baseBranch = exports.headBranch = exports.pullRequestNumber = exports.repository = void 0;
+exports.pullRequestLabels = exports.configFile = exports.githubToken = exports.pullRequestNumber = exports.repository = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const github_1 = __nccwpck_require__(3228);
 exports.repository = github_1.context.repo;
 exports.pullRequestNumber = (_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
-exports.headBranch = core.getInput("GITHUB_HEAD_REF", { required: true });
-exports.baseBranch = core.getInput("GITHUB_BASE_REF", { required: true });
+// export const headBranch = core.getInput("GITHUB_HEAD_REF", { required: true })
+// export const baseBranch = core.getInput("GITHUB_BASE_REF", { required: true })
 exports.githubToken = core.getInput("GITHUB_TOKEN", { required: true });
 exports.configFile = core.getInput("config", { required: false });
 exports.pullRequestLabels = JSON.parse(core.getInput("labels", { required: false }));
@@ -34316,21 +34316,20 @@ exports.pullRequestLabels = JSON.parse(core.getInput("labels", { required: false
 /***/ }),
 
 /***/ 2983:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.mergeCheckList = mergeCheckList;
-const actions_config_1 = __nccwpck_require__(6867);
 function mergeCheckList(config, state) {
     return config.schema.contents.filter((content) => {
         for (const rule of content.rules) {
-            if (rule.branches.length > 0 && !rule.branches.some((branchRule) => {
-                return branchRule.test(actions_config_1.headBranch);
-            })) {
-                continue;
-            }
+            // if (rule.branches.length > 0 && !rule.branches.some((branchRule) => {
+            //     return branchRule.test(headBranch)
+            // })) {
+            //     continue
+            // }
             if (rule.labels.length > 0 && !rule.labels.some((labelRule) => {
                 return config.labels.some(label => labelRule.test(label));
             })) {
