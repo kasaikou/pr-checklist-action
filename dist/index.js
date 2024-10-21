@@ -34640,6 +34640,7 @@ function parseCheckList(markdown) {
     for (const line of lines) {
         if (line.startsWith(headingPrefix)) {
             currentLabel = line.slice(headingPrefix.length);
+            resultMap[currentLabel] = {};
         }
         else if (line.startsWith(checkedPrefix)) {
             let todoMap = resultMap[currentLabel];
