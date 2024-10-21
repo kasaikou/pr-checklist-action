@@ -1,4 +1,4 @@
-
+import * as core from "@actions/core";
 const headingPrefix = "#### "
 const checkedPrefix = "- [x] "
 const uncheckedPrefix = "- [ ] "
@@ -40,6 +40,7 @@ export function parseCheckList(markdown: string) {
 export function renderCheckList(input: {
     contents: markdownContents
 }) {
+    core.info(`## render ${input.contents.length} category`)
     let markdown = "";
     markdown += prefixComment + "\n\n";
     for (const content of input.contents) {
