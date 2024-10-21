@@ -21,6 +21,7 @@ async function run(): Promise<undefined> {
         owner: repository.owner,
         number: pullRequestNumber,
     }) ?? []
+    core.info("found label: " + labels)
 
     const comment = await findPrevComment(
         {
