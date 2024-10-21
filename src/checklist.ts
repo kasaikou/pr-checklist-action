@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { configSchema } from "./config";
 import { markdownContents } from "./markdown";
 
@@ -29,6 +30,8 @@ export function mergeCheckList(config: {
         (content) => {
             const contentName = content.name;
             const currentContentState = state?.[contentName] ?? {};
+
+            core.info("watching '" + contentName + "'")
 
             return {
                 label: contentName,
