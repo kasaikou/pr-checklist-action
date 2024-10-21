@@ -79,9 +79,6 @@ export async function findPrevComment(input: {
                 viewer { login }
                 repository(name: $repo owner: $owner) {
                 pullRequest(number: $number) {
-                    labels {
-                        
-                    }
                     comments(first: 100 after: $after) {
                     nodes {
                         id
