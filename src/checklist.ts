@@ -16,9 +16,9 @@ export function mergeCheckList(config: {
                 //     continue
                 // }
 
-                if (rule.labels.length > 0 && !rule.labels.some((labelRule) => {
+                if (rule.labels.length > 0 && rule.labels.some((labelRule) => {
                     return config.labels.some(label => labelRule.test(label))
-                })) {
+                }) === false) {
                     continue
                 }
 
