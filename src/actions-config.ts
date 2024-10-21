@@ -8,4 +8,4 @@ export const pullRequestNumber = context.payload.pull_request?.number;
 // export const baseBranch = core.getInput("GITHUB_BASE_REF", { required: true })
 export const githubToken = core.getInput("github-token", { required: true })
 export const configFile = core.getInput("config", { required: false })
-export const pullRequestLabels = JSON.parse(core.getInput("labels", { required: false }))
+

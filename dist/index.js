@@ -34301,7 +34301,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.pullRequestLabels = exports.configFile = exports.githubToken = exports.pullRequestNumber = exports.repository = void 0;
+exports.configFile = exports.githubToken = exports.pullRequestNumber = exports.repository = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const github_1 = __nccwpck_require__(3228);
 exports.repository = github_1.context.repo;
@@ -34310,7 +34310,6 @@ exports.pullRequestNumber = (_a = github_1.context.payload.pull_request) === nul
 // export const baseBranch = core.getInput("GITHUB_BASE_REF", { required: true })
 exports.githubToken = core.getInput("github-token", { required: true });
 exports.configFile = core.getInput("config", { required: false });
-exports.pullRequestLabels = JSON.parse(core.getInput("labels", { required: false }));
 
 
 /***/ }),
