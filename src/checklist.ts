@@ -10,19 +10,18 @@ export function mergeCheckList(config: {
     return config.schema.contents.filter(
         (content) => {
             for (const rule of content.rules) {
-                // if (rule.branches.length > 0 && !rule.branches.some((branchRule) => {
-                //     return branchRule.test(headBranch)
-                // })) {
-                //     continue
-                // }
+                let isSatisfied = true
 
-                if (rule.labels.length > 0 && rule.labels.some((labelRule) => {
-                    return config.labels.some(label => labelRule.test(label))
-                }) === false) {
-                    continue
+                if (rule.labels.length > 0) {
+                    if (rule.labels.some((labelRule) => {
+                        return config.labels.some(label => labelRule.test(label))
+                    }) === false) {
+                        isSatisfied = false
+                    }
                 }
 
-                return true
+
+                return isSatisfied
             }
             return false
         }
