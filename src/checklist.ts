@@ -11,17 +11,14 @@ export function mergeCheckList(config: {
         (content) => {
             content.rules.some(
                 rule => {
-                    let isSatisfied = true
-
                     if (rule.labels.length > 0) {
                         if (rule.labels.some((labelRule) => {
                             return config.labels.some(label => labelRule.test(label))
                         }) === false) {
-                            isSatisfied = false
+                            return false
                         }
                     }
-
-                    return isSatisfied
+                    return true
                 }
             )
         }
