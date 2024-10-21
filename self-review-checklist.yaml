@@ -1,6 +1,6 @@
 contents:
   - name: Typescript Source
     rules:
-      - label: [typescript]
+      - label: [^typescript$]
     checks:
       - Run `yarn build`?
