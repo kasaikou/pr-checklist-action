@@ -5,9 +5,9 @@ import { z } from "zod";
 const zodRegExp = z.string().transform((expr) => new RegExp(expr));
 
 const zodConfigContentRuleSchema = z.object({
-    branches: z.array(zodRegExp),
-    paths: z.array(zodRegExp),
-    labels: z.array(zodRegExp),
+    branches: z.array(zodRegExp).default([]),
+    paths: z.array(zodRegExp).default([]),
+    labels: z.array(zodRegExp).default([]),
 });
 
 const zodConfigContentSchema = z.object({
