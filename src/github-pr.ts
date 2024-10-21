@@ -29,6 +29,10 @@ export async function getLabels(input: {
                         nodes {
                             name
                         }
+                        pageInfo {
+                            endCursor
+                            hasNextPage
+                        }
                     }
                 }
                 }
