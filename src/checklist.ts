@@ -4,7 +4,7 @@ import { markdownContents } from "./markdown";
 export function mergeCheckList(config: {
     schema: configSchema,
     labels: string[],
-}, state?: Map<string, Map<string, boolean>>): markdownContents {
+}, state?: { [key: string]: { [key: string]: boolean } }): markdownContents {
 
     return config.schema.contents.filter(
         (content) => {
@@ -28,14 +28,14 @@ export function mergeCheckList(config: {
     ).map(
         (content) => {
             const contentName = content.name;
-            const currentContentState = state?.get(contentName) ?? new Map<string, boolean>();
+            const currentContentState = state?.[contentName] ?? {};
 
             return {
                 label: contentName,
                 list: content.checks.map((check) => {
                     return {
                         name: check,
-                        checked: currentContentState.get(check) ?? false,
+                        checked: currentContentState[check] ?? false,
                     }
                 })
             }

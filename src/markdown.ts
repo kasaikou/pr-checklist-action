@@ -15,22 +15,21 @@ export type markdownContents = {
 export function parseCheckList(markdown: string) {
     const lines = markdown.split('\n')
     let currentLabel = "";
-    let resultMap = new Map<string, Map<string, boolean>>();
+    let resultMap: { [key: string]: { [key: string]: boolean } } = {};
 
     for (const line of lines) {
         if (line.startsWith(headingPrefix)) {
             currentLabel = line.slice(headingPrefix.length);
 
         } else if (line.startsWith(checkedPrefix)) {
-            let todoMap = resultMap.get(currentLabel)!;
-            todoMap.set(line.slice(checkedPrefix.length), true);
-            resultMap.set(currentLabel, todoMap);
+            let todoMap = resultMap[currentLabel];
+            todoMap[line.slice(checkedPrefix.length)] = true;
+            resultMap[currentLabel] = todoMap;
 
         } else if (line.startsWith(uncheckedPrefix)) {
-            let todoMap = resultMap.get(currentLabel)!;
-            todoMap.set(line.slice(uncheckedPrefix.length), false);
-            resultMap.set(currentLabel, todoMap);
-
+            let todoMap = resultMap[currentLabel];
+            todoMap[line.slice(checkedPrefix.length)] = true;
+            resultMap[currentLabel] = todoMap;
         }
     }
 
