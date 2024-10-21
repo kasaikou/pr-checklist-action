@@ -32,7 +32,7 @@ async function run(): Promise<undefined> {
     )
 
     const currentStatus = comment?.body ? parseCheckList(comment?.body) : undefined;
-    const contents = mergeCheckList({ schema, labels }, currentStatus)
+    const contents = renderCheckList({ contents: mergeCheckList({ schema, labels }, currentStatus) })
     core.info("## comments\n\n" + contents)
 
     await upsertComment({
@@ -40,7 +40,7 @@ async function run(): Promise<undefined> {
         repo: repository.repo,
         owner: repository.owner,
         number: pullRequestNumber,
-        comment: renderCheckList({ contents }),
+        comment: contents,
         commentId: comment?.id,
     })
 }
