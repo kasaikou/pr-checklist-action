@@ -34308,7 +34308,7 @@ exports.repository = github_1.context.repo;
 exports.pullRequestNumber = (_a = github_1.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.number;
 // export const headBranch = core.getInput("GITHUB_HEAD_REF", { required: true })
 // export const baseBranch = core.getInput("GITHUB_BASE_REF", { required: true })
-exports.githubToken = core.getInput("GITHUB_TOKEN", { required: true });
+exports.githubToken = core.getInput("github-token", { required: true });
 exports.configFile = core.getInput("config", { required: false });
 exports.pullRequestLabels = JSON.parse(core.getInput("labels", { required: false }));
 
