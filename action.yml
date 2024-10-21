@@ -4,6 +4,9 @@ inputs:
     description: Path of config file.
     required: false
     default: self-review-checklist.yaml
+  github-token:
+    description: set GITHUB_TOKEN with pull request write permission.
+    required: true
 runs:
   using: node20
   main: dist/index.js
