@@ -34605,6 +34605,7 @@ function run() {
         });
         const currentStatus = (comment === null || comment === void 0 ? void 0 : comment.body) ? (0, markdown_1.parseCheckList)(comment === null || comment === void 0 ? void 0 : comment.body) : undefined;
         const contents = (0, checklist_1.mergeCheckList)({ schema, labels }, currentStatus);
+        core.info("## comments\n\n" + contents);
         yield (0, github_pr_1.upsertComment)({
             octokit,
             repo: actions_config_1.repository.repo,
