@@ -6,4 +6,4 @@ inputs:
     default: self-review-checklist.yaml
 runs:
   using: node20
-  main: lib/main.js
+  main: dist/main.js
