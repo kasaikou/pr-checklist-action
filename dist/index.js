@@ -34372,9 +34372,9 @@ const fs_1 = __importDefault(__nccwpck_require__(9896));
 const zod_1 = __nccwpck_require__(4809);
 const zodRegExp = zod_1.z.string().transform((expr) => new RegExp(expr));
 const zodConfigContentRuleSchema = zod_1.z.object({
-    branches: zod_1.z.array(zodRegExp),
-    paths: zod_1.z.array(zodRegExp),
-    labels: zod_1.z.array(zodRegExp),
+    branches: zod_1.z.array(zodRegExp).default([]),
+    paths: zod_1.z.array(zodRegExp).default([]),
+    labels: zod_1.z.array(zodRegExp).default([]),
 });
 const zodConfigContentSchema = zod_1.z.object({
     name: zod_1.z.string(),
