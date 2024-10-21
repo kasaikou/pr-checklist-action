@@ -1,5 +1,5 @@
 {
-    "main": "lib/main.js",
+    "main": "dist/index.js",
     "scripts": {
         "build": " npx ncc build src/main.ts -o dist --source-map --license licenses.txt"
     },
