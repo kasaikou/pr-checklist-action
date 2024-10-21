@@ -9,21 +9,21 @@ export function mergeCheckList(config: {
 
     return config.schema.contents.filter(
         (content) => {
-            for (const rule of content.rules) {
-                let isSatisfied = true
+            content.rules.some(
+                rule => {
+                    let isSatisfied = true
 
-                if (rule.labels.length > 0) {
-                    if (rule.labels.some((labelRule) => {
-                        return config.labels.some(label => labelRule.test(label))
-                    }) === false) {
-                        isSatisfied = false
+                    if (rule.labels.length > 0) {
+                        if (rule.labels.some((labelRule) => {
+                            return config.labels.some(label => labelRule.test(label))
+                        }) === false) {
+                            isSatisfied = false
+                        }
                     }
+
+                    return isSatisfied
                 }
-
-
-                return isSatisfied
-            }
-            return false
+            )
         }
     ).map(
         (content) => {

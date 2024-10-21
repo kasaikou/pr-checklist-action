@@ -34347,7 +34347,7 @@ exports.mergeCheckList = mergeCheckList;
 const core = __importStar(__nccwpck_require__(7484));
 function mergeCheckList(config, state) {
     return config.schema.contents.filter((content) => {
-        for (const rule of content.rules) {
+        content.rules.some(rule => {
             let isSatisfied = true;
             if (rule.labels.length > 0) {
                 if (rule.labels.some((labelRule) => {
@@ -34357,8 +34357,7 @@ function mergeCheckList(config, state) {
                 }
             }
             return isSatisfied;
-        }
-        return false;
+        });
     }).map((content) => {
         var _a;
         const contentName = content.name;
