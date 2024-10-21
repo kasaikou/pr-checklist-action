@@ -45,7 +45,7 @@ export function renderCheckList(input: {
     markdown += prefixComment + "\n\n";
 
     if (input.contents.length == 0) {
-        markdown += ":innocent: **Check List is Empty :innocent:"
+        markdown += ":innocent: **Check List is Empty** :innocent:"
     }
 
     for (const content of input.contents) {

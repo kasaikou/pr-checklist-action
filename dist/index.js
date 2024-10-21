@@ -34707,7 +34707,7 @@ function renderCheckList(input) {
     let markdown = "";
     markdown += exports.prefixComment + "\n\n";
     if (input.contents.length == 0) {
-        markdown += ":innocent: **Check List is Empty :innocent:";
+        markdown += ":innocent: **Check List is Empty** :innocent:";
     }
     for (const content of input.contents) {
         markdown += headingPrefix + content.label + "\n\n";
