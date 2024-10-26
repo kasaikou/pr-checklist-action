@@ -1,4 +1,5 @@
-import YAML from "yaml";
+import * as core from "@actions/core";
+import YAML, { stringify } from "yaml";
 import fs from "fs";
 import { z } from "zod";
 

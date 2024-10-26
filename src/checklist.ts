@@ -8,20 +8,14 @@ export function mergeCheckList(config: {
 }, state?: { [key: string]: { [key: string]: boolean } }): markdownContents {
 
     return config.schema.contents.filter(
-        (content) => {
-            content.rules.some(
-                rule => {
-                    if (rule.labels.length > 0) {
-                        if (rule.labels.some((labelRule) => {
-                            return config.labels.some(label => labelRule.test(label))
-                        }) === false) {
-                            return false
-                        }
-                    }
-                    return true
-                }
-            )
-        }
+        (content) => content.rules.some(rule => {
+            if (rule.labels.length > 0) {
+                const matched = rule.labels.some(labelRule => config.labels.some(label => labelRule.test(label)))
+                if (matched === false) { return false }
+            }
+
+            return true
+        })
     ).map(
         (content) => {
             const contentName = content.name;
