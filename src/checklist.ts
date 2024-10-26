@@ -12,7 +12,9 @@ export function mergeCheckList(config: {
             content.rules.some(
                 rule => {
                     if (rule.labels.length > 0) {
+                        core.info(`- '${content.name}' has ${rule.labels.length} label rules.`)
                         if (rule.labels.some((labelRule) => {
+                            core.info(`  - ${labelRule.source}`)
                             return config.labels.some(label => labelRule.test(label))
                         }) === false) {
                             return false

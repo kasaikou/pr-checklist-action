@@ -24,7 +24,5 @@ const zodConfigSchema = z.object({
 export type configSchema = z.output<typeof zodConfigSchema>;
 
 export function readConfig(path: string): configSchema {
-    const parsed = zodConfigSchema.parse(YAML.parse(fs.readFileSync(path, 'utf-8')));
-    core.info(stringify(parsed))
-    return parsed
+    return zodConfigSchema.parse(YAML.parse(fs.readFileSync(path, 'utf-8')));
 }
