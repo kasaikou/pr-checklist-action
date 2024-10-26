@@ -34346,17 +34346,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.mergeCheckList = mergeCheckList;
 const core = __importStar(__nccwpck_require__(7484));
 function mergeCheckList(config, state) {
-    return config.schema.contents.filter((content) => {
-        content.rules.some(rule => {
-            if (rule.labels.length > 0) {
-                core.info(`- '${content.name}' has ${rule.labels.length} label rules.`);
-                if (rule.labels.some((labelRule) => { config.labels.some(label => labelRule.test(label)); }) === false) {
-                    return false;
-                }
+    return config.schema.contents.filter((content) => content.rules.some(rule => {
+        if (rule.labels.length > 0) {
+            const matched = rule.labels.some(labelRule => config.labels.some(label => labelRule.test(label)));
+            if (matched === false) {
+                return false;
             }
-            return true;
-        });
-    }).map((content) => {
+        }
+        return true;
+    })).map((content) => {
         var _a;
         const contentName = content.name;
         const currentContentState = (_a = state === null || state === void 0 ? void 0 : state[contentName]) !== null && _a !== void 0 ? _a : {};
