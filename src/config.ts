@@ -1,4 +1,5 @@
-import YAML from "yaml";
+import * as core from "@actions/core";
+import YAML, { stringify } from "yaml";
 import fs from "fs";
 import { z } from "zod";
 
@@ -23,5 +24,7 @@ const zodConfigSchema = z.object({
 export type configSchema = z.output<typeof zodConfigSchema>;
 
 export function readConfig(path: string): configSchema {
-    return zodConfigSchema.parse(YAML.parse(fs.readFileSync(path, 'utf-8')));
+    const parsed = zodConfigSchema.parse(YAML.parse(fs.readFileSync(path, 'utf-8')));
+    core.info(stringify(parsed))
+    return parsed
 }
