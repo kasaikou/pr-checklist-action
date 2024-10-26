@@ -34620,7 +34620,7 @@ function run() {
             owner: actions_config_1.repository.owner,
             number: actions_config_1.pullRequestNumber,
         })) !== null && _a !== void 0 ? _a : [];
-        core.info("found label: " + labels);
+        core.info("found label: " + labels.map(x => `'${x}'`).join(", "));
         const comment = yield (0, github_pr_1.findPrevComment)({
             octokit,
             repo: actions_config_1.repository.repo,
