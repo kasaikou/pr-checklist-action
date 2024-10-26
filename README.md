@@ -10,7 +10,7 @@ Save `self-review-checklist.yaml` in repository root directory.
 contents:
   - name: SQL
     rules:
-      - label: [^sql$]
+      - labels: [^sql$]
     checks:
       - Consider about N + 1 problem?
 ```
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./
+      - uses: kasaikou/self-review-checklist-actions@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           config: self-review-checklist.yaml
