@@ -184,7 +184,7 @@ export async function upsertComment(input: {
             await input.octokit.graphql(
                 `
                     mutation($input: UpdatePullRequestInput!) {
-                        updateIssueComment(input: $input)
+                        updatePullRequest(input: $input)
                     }
                 `,
                 {
