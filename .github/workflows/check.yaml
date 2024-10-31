@@ -1,7 +1,6 @@
 on:
   pull_request:
-    branches: [main]
-    types: [opened, synchronize, labeled, unlabeled]
+    types: [opened, synchronize]
 jobs:
   run:
     permissions:
@@ -10,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/labeler@v5
       - uses: ./
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

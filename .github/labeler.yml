@@ -1,0 +1,6 @@
+typescript:
+  - changed-files:
+      - any-glob-to-any-file: src/**
+action-config:
+  - changed-files:
+      - any-glob-to-any-file: action.yml

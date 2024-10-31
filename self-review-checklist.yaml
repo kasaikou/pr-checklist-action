@@ -4,3 +4,8 @@ contents:
       - labels: [^typescript$]
     checks:
       - Run `yarn build`?
+  - name: Action Config
+    rules:
+      - labels: [^action-config$]
+    checks:
+      - (If new property) Add property into `README.md`?
