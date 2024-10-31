@@ -1,4 +1,5 @@
 name: Make Checklist for Self Reviewing
+description: Generates checklist for self reviewing in pull requests.
 inputs:
   config:
     description: Path of config file.
@@ -7,6 +8,10 @@ inputs:
   github-token:
     description: set GITHUB_TOKEN with pull request write permission.
     required: true
+  message-on-empty:
+    description: Display message when checklist is empty
+    required: false
+    default: ":innocent: **Check List is Empty** :innocent:"
 runs:
   using: node20
   main: dist/index.js

@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import { configFile, githubToken, pullRequestNumber, repository } from "./actions-config";
+import { configFile, githubToken, messageOnEmpty, pullRequestNumber, repository } from "./actions-config";
 import { findPrevComment, getLabels, upsertComment } from "./github-pr";
 import { parseCheckList, renderCheckList } from "./markdown";
 import { readConfig } from "./config";
@@ -33,7 +33,11 @@ async function run(): Promise<undefined> {
     )
 
     const currentStatus = comment?.body ? parseCheckList(comment?.body) : undefined;
-    const contents = renderCheckList({ contents: mergeCheckList({ schema, labels }, currentStatus) })
+    const contents = renderCheckList({
+        previousComment: comment?.body,
+        contents: mergeCheckList({ schema, labels }, currentStatus),
+        messageOnEmpty: messageOnEmpty,
+    })
     core.info("## comments\n\n" + contents)
 
     await upsertComment({
@@ -42,7 +46,7 @@ async function run(): Promise<undefined> {
         owner: repository.owner,
         number: pullRequestNumber,
         comment: contents,
-        commentId: comment?.id,
+        found: comment,
     })
 }
 

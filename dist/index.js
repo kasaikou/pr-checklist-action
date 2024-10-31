@@ -34301,7 +34301,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.configFile = exports.githubToken = exports.pullRequestNumber = exports.repository = void 0;
+exports.messageOnEmpty = exports.configFile = exports.githubToken = exports.pullRequestNumber = exports.repository = void 0;
 const core = __importStar(__nccwpck_require__(7484));
 const github_1 = __nccwpck_require__(3228);
 exports.repository = github_1.context.repo;
@@ -34310,6 +34310,7 @@ exports.pullRequestNumber = (_a = github_1.context.payload.pull_request) === nul
 // export const baseBranch = core.getInput("GITHUB_BASE_REF", { required: true })
 exports.githubToken = core.getInput("github-token", { required: true });
 exports.configFile = core.getInput("config", { required: false });
+exports.messageOnEmpty = core.getInput("message-on-empty", { required: false });
 
 
 /***/ }),
@@ -34477,12 +34478,32 @@ function findPrevComment(input) {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         let after = null;
         let hasNextPage = true;
+        const data = yield input.octokit.graphql(`
+            query($repo: String! $owner: String! $number: Int!) {
+                repository(name: $repo owner: $owner) {
+                pullRequest(number: $number) {                    
+                    id
+                    body
+                }
+                }
+            }
+            `, {
+            owner: input.owner,
+            repo: input.repo,
+            number: input.number,
+        });
+        const pullRequestId = data.repository.pullRequest.id;
+        if ((0, markdown_1.hasGeneratedText)(data.repository.pullRequest.body)) {
+            return {
+                pullRequestId,
+                body: data.repository.pullRequest.body
+            };
+        }
         while (hasNextPage) {
             const data = yield input.octokit.graphql(`
             query($repo: String! $owner: String! $number: Int! $after: String) {
-                viewer { login }
                 repository(name: $repo owner: $owner) {
-                pullRequest(number: $number) {
+                pullRequest(number: $number) {                    
                     comments(first: 100 after: $after) {
                     nodes {
                         id
@@ -34506,15 +34527,14 @@ function findPrevComment(input) {
                 number: input.number,
                 after: after,
             });
-            const viewer = data.viewer;
             const repository = data.repository;
-            const target = (_c = (_b = (_a = repository.pullRequest) === null || _a === void 0 ? void 0 : _a.comments) === null || _b === void 0 ? void 0 : _b.nodes) === null || _c === void 0 ? void 0 : _c.find((node) => {
-                var _a, _b;
-                return ((_a = node === null || node === void 0 ? void 0 : node.author) === null || _a === void 0 ? void 0 : _a.login) === viewer.login.replace("[bot]", "") &&
-                    ((_b = node === null || node === void 0 ? void 0 : node.body) === null || _b === void 0 ? void 0 : _b.includes(markdown_1.prefixComment));
-            });
+            const target = (_c = (_b = (_a = repository.pullRequest) === null || _a === void 0 ? void 0 : _a.comments) === null || _b === void 0 ? void 0 : _b.nodes) === null || _c === void 0 ? void 0 : _c.find((node) => (0, markdown_1.hasGeneratedText)(node.body));
             if (target) {
-                return target;
+                return {
+                    pullRequestId,
+                    body: target.body,
+                    commentId: target.id,
+                };
             }
             after = (_f = (_e = (_d = repository.pullRequest) === null || _d === void 0 ? void 0 : _d.comments) === null || _e === void 0 ? void 0 : _e.pageInfo) === null || _f === void 0 ? void 0 : _f.endCursor;
             hasNextPage = (_k = (_j = (_h = (_g = repository.pullRequest) === null || _g === void 0 ? void 0 : _g.comments) === null || _h === void 0 ? void 0 : _h.pageInfo) === null || _j === void 0 ? void 0 : _j.hasNextPage) !== null && _k !== void 0 ? _k : false;
@@ -34524,22 +34544,41 @@ function findPrevComment(input) {
 }
 function upsertComment(input) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (input.commentId) {
-            yield input.octokit.graphql(`
-                mutation($input: UpdateIssueCommentInput!) {
-                updateIssueComment(input: $input) {
-                        issueComment {
-                            id
-                            body
+        if (input.found) {
+            if (input.found.commentId) {
+                yield input.octokit.graphql(`
+                    mutation($input: UpdateIssueCommentInput!) {
+                    updateIssueComment(input: $input) {
+                            issueComment {
+                                id
+                                body
+                            }
                         }
                     }
-                }
-            `, {
-                input: {
-                    id: input.commentId,
-                    body: input.comment,
-                }
-            });
+                `, {
+                    input: {
+                        id: input.found.commentId,
+                        body: input.comment,
+                    }
+                });
+            }
+            else {
+                yield input.octokit.graphql(`
+                    mutation($input: UpdatePullRequestInput!) {
+                        updatePullRequest(input: $input) {
+                            pullRequest {
+                                id
+                                body
+                            }
+                        }
+                    }
+                `, {
+                    input: {
+                        pullRequestId: input.found.pullRequestId,
+                        body: input.comment,
+                    }
+                });
+            }
         }
         else {
             yield input.octokit.rest.issues.createComment({
@@ -34623,7 +34662,11 @@ function run() {
             number: actions_config_1.pullRequestNumber,
         });
         const currentStatus = (comment === null || comment === void 0 ? void 0 : comment.body) ? (0, markdown_1.parseCheckList)(comment === null || comment === void 0 ? void 0 : comment.body) : undefined;
-        const contents = (0, markdown_1.renderCheckList)({ contents: (0, checklist_1.mergeCheckList)({ schema, labels }, currentStatus) });
+        const contents = (0, markdown_1.renderCheckList)({
+            previousComment: comment === null || comment === void 0 ? void 0 : comment.body,
+            contents: (0, checklist_1.mergeCheckList)({ schema, labels }, currentStatus),
+            messageOnEmpty: actions_config_1.messageOnEmpty,
+        });
         core.info("## comments\n\n" + contents);
         yield (0, github_pr_1.upsertComment)({
             octokit,
@@ -34631,7 +34674,7 @@ function run() {
             owner: actions_config_1.repository.owner,
             number: actions_config_1.pullRequestNumber,
             comment: contents,
-            commentId: comment === null || comment === void 0 ? void 0 : comment.id,
+            found: comment,
         });
     });
 }
@@ -34669,14 +34712,18 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.prefixComment = void 0;
+exports.hasGeneratedText = hasGeneratedText;
 exports.parseCheckList = parseCheckList;
 exports.renderCheckList = renderCheckList;
 const core = __importStar(__nccwpck_require__(7484));
 const headingPrefix = "#### ";
 const checkedPrefix = "- [x] ";
 const uncheckedPrefix = "- [ ] ";
-exports.prefixComment = "<!-- Generated by kasaikou/self-review-checklist-actions, DO NOT EDIT. -->";
+const prefixComment = "<!-- Generated by kasaikou/self-review-checklist-actions, DO NOT EDIT. -->";
+const suffixComment = "<!-- Generated by kasaikou/self-review-checklist-actions up to here. -->";
+function hasGeneratedText(text) {
+    return text.includes(prefixComment) && text.includes(suffixComment);
+}
 function parseCheckList(markdown) {
     const lines = markdown.split('\n');
     let currentLabel = "";
@@ -34702,9 +34749,9 @@ function parseCheckList(markdown) {
 function renderCheckList(input) {
     core.info(`## render ${input.contents.length} category`);
     let markdown = "";
-    markdown += exports.prefixComment + "\n\n";
+    markdown += prefixComment + "\n\n";
     if (input.contents.length == 0) {
-        markdown += ":innocent: **Check List is Empty** :innocent:";
+        markdown += input.messageOnEmpty;
     }
     for (const content of input.contents) {
         markdown += headingPrefix + content.label + "\n\n";
@@ -34713,7 +34760,16 @@ function renderCheckList(input) {
         }
         markdown += "\n";
     }
-    return markdown;
+    markdown += suffixComment + "\n";
+    if (input.previousComment) {
+        const prevGeneratedIdxBegin = input.previousComment.indexOf(prefixComment);
+        const prevGeneratedIdxEnd = input.previousComment.indexOf(suffixComment) + suffixComment.length;
+        const prevGenerated = input.previousComment.substring(prevGeneratedIdxBegin, prevGeneratedIdxEnd);
+        return input.previousComment.replace(prevGenerated, markdown);
+    }
+    else {
+        return markdown;
+    }
 }
 
 
