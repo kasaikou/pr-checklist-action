@@ -21,7 +21,7 @@ export async function getLabels(input: {
 
         const data = await input.octokit.graphql<{ repository: Repository; viewer: User }>(
             `
-            query($repo: String! $owner: String! $number: Int! $after: String) {
+            query($repo: String! $owner: String! $number: Int!) {
                 viewer { login }
                 repository(name: $repo owner: $owner) {
                 pullRequest(number: $number) {
@@ -42,7 +42,6 @@ export async function getLabels(input: {
                 owner: input.owner,
                 repo: input.repo,
                 number: input.number,
-                after: after,
             }
         )
 
