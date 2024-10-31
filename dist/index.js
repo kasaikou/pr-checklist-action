@@ -34561,7 +34561,12 @@ function upsertComment(input) {
             else {
                 yield input.octokit.graphql(`
                     mutation($input: UpdatePullRequestInput!) {
-                        updatePullRequest(input: $input) {}
+                        updatePullRequest(input: $input) 
+                            pullRequest {
+                                id
+                                body
+                            }
+                        }
                     }
                 `, {
                     input: {
