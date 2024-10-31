@@ -61,24 +61,51 @@ export async function getLabels(input: {
     return labels;
 }
 
+type findPrevCommentResult = {
+    commentId?: string
+    body: string
+}
+
 export async function findPrevComment(input: {
     octokit: InstanceType<typeof GitHub>,
     owner: string,
     repo: string,
     number: number,
 }
-): Promise<IssueComment | undefined> {
+): Promise<findPrevCommentResult | undefined> {
 
     let after = null;
     let hasNextPage = true;
+
+    const data = await input.octokit.graphql<{ repository: Repository; viewer: User }>(
+        `
+            query($repo: String! $owner: String! $number: Int! $after: String) {
+                repository(name: $repo owner: $owner) {
+                pullRequest(number: $number) {                    
+                    body
+                }
+                }
+            }
+            `,
+        {
+            owner: input.owner,
+            repo: input.repo,
+            number: input.number,
+        }
+    );
+
+    if (hasGeneratedText(data.repository.pullRequest!.body)) {
+        return {
+            body: data.repository.pullRequest!.body
+        }
+    }
 
     while (hasNextPage) {
         const data = await input.octokit.graphql<{ repository: Repository; viewer: User }>(
             `
             query($repo: String! $owner: String! $number: Int! $after: String) {
-                viewer { login }
                 repository(name: $repo owner: $owner) {
-                pullRequest(number: $number) {
+                pullRequest(number: $number) {                    
                     comments(first: 100 after: $after) {
                     nodes {
                         id
@@ -105,7 +132,6 @@ export async function findPrevComment(input: {
             }
         );
 
-        const viewer = data.viewer as User;
         const repository = data.repository as Repository;
 
         const target = repository.pullRequest?.comments?.nodes?.find(
@@ -113,7 +139,10 @@ export async function findPrevComment(input: {
         );
 
         if (target) {
-            return target;
+            return {
+                body: target.body,
+                commentId: target.id,
+            };
         }
 
         after = repository.pullRequest?.comments?.pageInfo?.endCursor;
@@ -129,27 +158,43 @@ export async function upsertComment(input: {
     repo: string,
     number: number,
     comment: string,
-    commentId?: string,
+    found?: findPrevCommentResult,
 }) {
-    if (input.commentId) {
-        await input.octokit.graphql(
-            `
-                mutation($input: UpdateIssueCommentInput!) {
-                updateIssueComment(input: $input) {
-                        issueComment {
-                            id
-                            body
+    if (input.found) {
+        if (input.found.commentId) {
+            await input.octokit.graphql(
+                `
+                    mutation($input: UpdateIssueCommentInput!) {
+                    updateIssueComment(input: $input) {
+                            issueComment {
+                                id
+                                body
+                            }
                         }
                     }
+                `,
+                {
+                    input: {
+                        id: input.found.commentId,
+                        body: input.comment,
+                    }
                 }
-            `,
-            {
-                input: {
-                    id: input.commentId,
-                    body: input.comment,
+            )
+        } else {
+            await input.octokit.graphql(
+                `
+                    mutation($input: UpdatePullRequestInput!) {
+                        updateIssueComment(input: $input)
+                    }
+                `,
+                {
+                    input: {
+                        pullRequestId: input.number,
+                        body: input.comment,
+                    }
                 }
-            }
-        )
+            )
+        }
     } else {
         await input.octokit.rest.issues.createComment({
             owner: input.owner,

@@ -34478,12 +34478,29 @@ function findPrevComment(input) {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         let after = null;
         let hasNextPage = true;
+        const data = yield input.octokit.graphql(`
+            query($repo: String! $owner: String! $number: Int! $after: String) {
+                repository(name: $repo owner: $owner) {
+                pullRequest(number: $number) {                    
+                    body
+                }
+                }
+            }
+            `, {
+            owner: input.owner,
+            repo: input.repo,
+            number: input.number,
+        });
+        if ((0, markdown_1.hasGeneratedText)(data.repository.pullRequest.body)) {
+            return {
+                body: data.repository.pullRequest.body
+            };
+        }
         while (hasNextPage) {
             const data = yield input.octokit.graphql(`
             query($repo: String! $owner: String! $number: Int! $after: String) {
-                viewer { login }
                 repository(name: $repo owner: $owner) {
-                pullRequest(number: $number) {
+                pullRequest(number: $number) {                    
                     comments(first: 100 after: $after) {
                     nodes {
                         id
@@ -34507,11 +34524,13 @@ function findPrevComment(input) {
                 number: input.number,
                 after: after,
             });
-            const viewer = data.viewer;
             const repository = data.repository;
             const target = (_c = (_b = (_a = repository.pullRequest) === null || _a === void 0 ? void 0 : _a.comments) === null || _b === void 0 ? void 0 : _b.nodes) === null || _c === void 0 ? void 0 : _c.find((node) => (0, markdown_1.hasGeneratedText)(node.body));
             if (target) {
-                return target;
+                return {
+                    body: target.body,
+                    commentId: target.id,
+                };
             }
             after = (_f = (_e = (_d = repository.pullRequest) === null || _d === void 0 ? void 0 : _d.comments) === null || _e === void 0 ? void 0 : _e.pageInfo) === null || _f === void 0 ? void 0 : _f.endCursor;
             hasNextPage = (_k = (_j = (_h = (_g = repository.pullRequest) === null || _g === void 0 ? void 0 : _g.comments) === null || _h === void 0 ? void 0 : _h.pageInfo) === null || _j === void 0 ? void 0 : _j.hasNextPage) !== null && _k !== void 0 ? _k : false;
@@ -34521,22 +34540,36 @@ function findPrevComment(input) {
 }
 function upsertComment(input) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (input.commentId) {
-            yield input.octokit.graphql(`
-                mutation($input: UpdateIssueCommentInput!) {
-                updateIssueComment(input: $input) {
-                        issueComment {
-                            id
-                            body
+        if (input.found) {
+            if (input.found.commentId) {
+                yield input.octokit.graphql(`
+                    mutation($input: UpdateIssueCommentInput!) {
+                    updateIssueComment(input: $input) {
+                            issueComment {
+                                id
+                                body
+                            }
                         }
                     }
-                }
-            `, {
-                input: {
-                    id: input.commentId,
-                    body: input.comment,
-                }
-            });
+                `, {
+                    input: {
+                        id: input.found.commentId,
+                        body: input.comment,
+                    }
+                });
+            }
+            else {
+                yield input.octokit.graphql(`
+                    mutation($input: UpdatePullRequestInput!) {
+                        updateIssueComment(input: $input)
+                    }
+                `, {
+                    input: {
+                        pullRequestId: input.number,
+                        body: input.comment,
+                    }
+                });
+            }
         }
         else {
             yield input.octokit.rest.issues.createComment({
@@ -34632,7 +34665,7 @@ function run() {
             owner: actions_config_1.repository.owner,
             number: actions_config_1.pullRequestNumber,
             comment: contents,
-            commentId: comment === null || comment === void 0 ? void 0 : comment.id,
+            found: comment,
         });
     });
 }

@@ -46,7 +46,7 @@ async function run(): Promise<undefined> {
         owner: repository.owner,
         number: pullRequestNumber,
         comment: contents,
-        commentId: comment?.id,
+        found: comment,
     })
 }
 
