@@ -34437,7 +34437,7 @@ function getLabels(input) {
         let labels = [];
         while (hasNextPage) {
             const data = yield input.octokit.graphql(`
-            query($repo: String! $owner: String! $number: Int!) {
+            query($repo: String! $owner: String! $number: Int! $after: String) {
                 viewer { login }
                 repository(name: $repo owner: $owner) {
                 pullRequest(number: $number) {
@@ -34457,6 +34457,7 @@ function getLabels(input) {
                 owner: input.owner,
                 repo: input.repo,
                 number: input.number,
+                after: after,
             });
             const repository = data.repository;
             const labelsPart = (_c = (_b = (_a = repository.pullRequest) === null || _a === void 0 ? void 0 : _a.labels) === null || _b === void 0 ? void 0 : _b.nodes) === null || _c === void 0 ? void 0 : _c.map(x => x.name);
@@ -34478,7 +34479,7 @@ function findPrevComment(input) {
         let after = null;
         let hasNextPage = true;
         const data = yield input.octokit.graphql(`
-            query($repo: String! $owner: String! $number: Int! $after: String) {
+            query($repo: String! $owner: String! $number: Int!) {
                 repository(name: $repo owner: $owner) {
                 pullRequest(number: $number) {                    
                     body
