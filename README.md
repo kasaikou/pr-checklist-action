@@ -1,6 +1,7 @@
-# self-review-checklist-actions
+# self-review-checklist-action
 
-This actions makes checklist for pull request self reviewing.
+
+This action makes checklist for pull request self reviewing.
 
 ## Usage
 
@@ -30,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: kasaikou/self-review-checklist-actions@main
+      - uses: kasaikou/self-review-checklist-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           config: self-review-checklist.yaml
@@ -42,3 +43,4 @@ jobs:
 | :--: | :--: | :--
 | github-token | required | GitHub token for read contents and making pull-request comments.
 | config | (self-review-checklist.yaml) | Config file path.
+| message-on-empty | (:innocent: **Check List is Empty** :innocent:) | Message displaying when there is no applicable checklist.
