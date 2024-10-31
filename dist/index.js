@@ -34482,6 +34482,7 @@ function findPrevComment(input) {
             query($repo: String! $owner: String! $number: Int!) {
                 repository(name: $repo owner: $owner) {
                 pullRequest(number: $number) {                    
+                    id
                     body
                 }
                 }
@@ -34491,8 +34492,10 @@ function findPrevComment(input) {
             repo: input.repo,
             number: input.number,
         });
+        const pullRequestId = data.repository.pullRequest.id;
         if ((0, markdown_1.hasGeneratedText)(data.repository.pullRequest.body)) {
             return {
+                pullRequestId,
                 body: data.repository.pullRequest.body
             };
         }
@@ -34528,6 +34531,7 @@ function findPrevComment(input) {
             const target = (_c = (_b = (_a = repository.pullRequest) === null || _a === void 0 ? void 0 : _a.comments) === null || _b === void 0 ? void 0 : _b.nodes) === null || _c === void 0 ? void 0 : _c.find((node) => (0, markdown_1.hasGeneratedText)(node.body));
             if (target) {
                 return {
+                    pullRequestId,
                     body: target.body,
                     commentId: target.id,
                 };
@@ -34570,7 +34574,7 @@ function upsertComment(input) {
                     }
                 `, {
                     input: {
-                        pullRequestId: input.number,
+                        pullRequestId: input.found.pullRequestId,
                         body: input.comment,
                     }
                 });

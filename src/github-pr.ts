@@ -62,6 +62,7 @@ export async function getLabels(input: {
 }
 
 type findPrevCommentResult = {
+    pullRequestId: string
     commentId?: string
     body: string
 }
@@ -82,6 +83,7 @@ export async function findPrevComment(input: {
             query($repo: String! $owner: String! $number: Int!) {
                 repository(name: $repo owner: $owner) {
                 pullRequest(number: $number) {                    
+                    id
                     body
                 }
                 }
@@ -94,8 +96,11 @@ export async function findPrevComment(input: {
         }
     );
 
+    const pullRequestId = data.repository.pullRequest!.id;
+
     if (hasGeneratedText(data.repository.pullRequest!.body)) {
         return {
+            pullRequestId,
             body: data.repository.pullRequest!.body
         }
     }
@@ -140,6 +145,7 @@ export async function findPrevComment(input: {
 
         if (target) {
             return {
+                pullRequestId,
                 body: target.body,
                 commentId: target.id,
             };
@@ -194,7 +200,7 @@ export async function upsertComment(input: {
                 `,
                 {
                     input: {
-                        pullRequestId: input.number,
+                        pullRequestId: input.found.pullRequestId,
                         body: input.comment,
                     }
                 }
