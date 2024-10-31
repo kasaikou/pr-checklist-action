@@ -43,4 +43,4 @@ jobs:
 | :--: | :--: | :--
 | github-token | required | GitHub token for read contents and making pull-request comments.
 | config | (self-review-checklist.yaml) | Config file path.
-| message-on-empty | (:innocent: **Check List is Empty** :innocent:) | Message displaying when there is no applicable checklist.
+| message-on-empty | ( :innocent: **Check List is Empty** :innocent:) | Message displaying when there is no applicable checklist.
