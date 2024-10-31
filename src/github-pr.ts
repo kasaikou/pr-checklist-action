@@ -4,7 +4,7 @@ import {
     Repository,
     User,
 } from "@octokit/graphql-schema";
-import { prefixComment } from "./markdown";
+import { hasGeneratedText } from "./markdown";
 
 export async function getLabels(input: {
     octokit: InstanceType<typeof GitHub>,
@@ -109,9 +109,7 @@ export async function findPrevComment(input: {
         const repository = data.repository as Repository;
 
         const target = repository.pullRequest?.comments?.nodes?.find(
-            (node: IssueComment | null | undefined) =>
-                node?.author?.login === viewer.login.replace("[bot]", "") &&
-                node?.body?.includes(prefixComment)
+            (node: IssueComment | null | undefined) => hasGeneratedText(node!.body)
         );
 
         if (target) {
