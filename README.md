@@ -1,7 +1,10 @@
 # pr-checklist-action
 
-
 This action makes checklist for pull request self reviewing.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e166fc30-f9dd-47d4-9f06-fcaac028d265" />
+</p>
 
 ## Usage
 
