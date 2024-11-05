@@ -1,11 +1,11 @@
-# self-review-checklist-action
+# pr-checklist-action
 
 
 This action makes checklist for pull request self reviewing.
 
 ## Usage
 
-Save `self-review-checklist.yaml` in repository root directory.
+Save `pr-checklist.yaml` in repository root directory.
 
 ```yaml
 contents:
@@ -31,10 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: kasaikou/self-review-checklist-action@main
+      - uses: kasaikou/pr-checklist-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          config: self-review-checklist.yaml
+          config: pr-checklist.yaml
 ```
 
 ## Options
@@ -42,5 +42,5 @@ jobs:
 | property | required (or default) | description
 | :--: | :--: | :--
 | github-token | required | GitHub token for read contents and making pull-request comments.
-| config | (self-review-checklist.yaml) | Config file path.
+| config | (pr-checklist.yaml) | Config file path.
 | message-on-empty | ( :innocent: **Check List is Empty** :innocent:) | Message displaying when there is no applicable checklist.

@@ -4,7 +4,7 @@ inputs:
   config:
     description: Path of config file.
     required: false
-    default: self-review-checklist.yaml
+    default: pr-checklist.yaml
   github-token:
     description: set GITHUB_TOKEN with pull request write permission.
     required: true
