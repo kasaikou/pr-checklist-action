@@ -4,3 +4,12 @@ typescript:
 action-config:
   - changed-files:
       - any-glob-to-any-file: action.yml
+enhancement:
+  - head-branch:
+      - ^feat(ure)?/
+bugfix:
+  - head-branch:
+      - ^bug(fix)?/
+refactor:
+  - head-branch:
+      - ^refactor?/
