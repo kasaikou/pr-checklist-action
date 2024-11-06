@@ -1,5 +1,5 @@
 name-template: $RESOLVED_VERSION released
-tag-template: $RESOVED_VERSION
+tag-template: $RESOLVED_VERSION
 categories:
   - title: Features
     labels:
