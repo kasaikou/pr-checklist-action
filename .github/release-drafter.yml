@@ -14,10 +14,10 @@ categories:
 version-resolver:
   major:
     labels:
-      - major
+      - breaking-change
   minor:
     labels:
-      - minor
+      - enhancement
   patch:
     labels:
       - patch
